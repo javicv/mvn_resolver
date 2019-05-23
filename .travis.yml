@@ -1,6 +1,33 @@
 language: go
 go:
 - 1.12.x
-script:
-  - go test -v -race ./...
-  - go build
+env:
+  - BIN_NAME=mvn_resolver
+jobs:
+  include:
+  - stage: Test
+    script: go test -v -race ./...
+  - stage: Build
+    script: go build
+  - stage: Deploy
+    if: tag IS present
+    script:
+    - export GOOS=linux && export GOARCH=386 && go build -o ${BIN_NAME}
+    - tar -czvf ${BIN_NAME}-${TRAVIS_TAG}-${GOOS}-${GOARCH}.tgz ${BIN_NAME}
+    - export GOOS=windows && export GOARCH=386 && go build -o ${BIN_NAME}.exe
+    - tar -czvf ${BIN_NAME}-${TRAVIS_TAG}-${GOOS}-${GOARCH}.tgz ${BIN_NAME}.exe
+    - export GOOS=linux && GOARCH=amd64 && go build -o ${BIN_NAME}
+    - tar -czvf ${BIN_NAME}-${TRAVIS_TAG}-${GOOS}-${GOARCH}.tgz ${BIN_NAME}
+    - export GOOS=darwin && export GOARCH=amd64 && go build -o ${BIN_NAME}
+    - tar -czvf ${BIN_NAME}-${TRAVIS_TAG}-${GOOS}-${GOARCH}.tgz ${BIN_NAME}
+    - export GOOS=windows && export GOARCH=amd64 && go build -o ${BIN_NAME}.exe
+    - tar -czvf ${BIN_NAME}-${TRAVIS_TAG}-${GOOS}-${GOARCH}.tgz ${BIN_NAME}.exe
+    deploy:
+      provider: releases
+      api_key:
+        secure: DZ44zl4Bwq5TufxOTlcdDT1ePmbUim8nTaf0oTFkqIkHFSLKaWuERoiozZzjGyfaAqiQIZ0VhGz++UFrSkXzqYHzlTLuDnuxhyyYS0kGzs25YDsVO1/AP6XdSE2SjAZpzktu8lR4RgMKFmW/LnyJ0lAJHa4In/z+qCMXgCVURDwZOvkwT8+11Cq5c1r91CY/KKqgwAwi7IgrsvytI/2Fk8u19bVNQqK8s3dZqq5bGgwcvorvjvvNLGbLHsqxhonBP/GCaFGhixOksSXrf4eNv0en3KUUpX91Z6EKcBj67WC950cQpVD6PeRZ5WPoCsZ4Lmi/udbCb41hNDvHsNtxfmbXPcXA2CqYil/ROo3yyXNCj+vGhAR+c2VOyB7PE8bv+0g9mHDPZ9gOecbTQCRad/2XRZ4RcpA8spNggNUi0py+G5GVSljIbG2aJFhtfzVBlmUnFsD32O50zOdyI3LIZ3EzBFpa3pGIrBFYpkXX/QC46zKaytg8qiN9xcxhdP27ZcjYXRU+OAJwAUtiT+tlN5qsBRa3NfoH62AuKw71S8s4JavBfxjUE7JNr6Sg7q2iY9GnJ6gVZ6gNWGxaojM8o/Myldh8Exycm8k8TdnMNJGzJZE3H+uMC3et6YppOYVtBTPj1JJ0amPIvunKJlUblGte98ZjiHvMWc+M9styFN0=
+      file_glob: true
+      file: ./*.tgz
+      skip_cleanup: true
+      on:
+        tags: true
