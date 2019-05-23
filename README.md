@@ -1,5 +1,5 @@
-# Maven URL Resolver
-[![Build Status](https://travis-ci.com/javicv/mvn_resolver.svg?branch=master)](https://travis-ci.org/javicv/mvn_resolver)
+# Maven Artifact URL Resolver
+[![Build Status](https://travis-ci.com/javicv/mvn_resolver.svg?branch=master)](https://travis-ci.com/javicv/mvn_resolver)
 
 This small application is designed to resolve the URL of the last snapshot uploaded to a maven repository for a given version. The URL will be printed on the *standard output*.
 
