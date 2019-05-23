@@ -2,7 +2,7 @@ language: go
 go:
 - 1.12.x
 env:
-  - BIN_NAME=mvn_resolver
+- BIN_NAME=mvn_resolver
 jobs:
   include:
   - stage: Test
@@ -25,9 +25,9 @@ jobs:
     deploy:
       provider: releases
       api_key:
-        secure: DZ44zl4Bwq5TufxOTlcdDT1ePmbUim8nTaf0oTFkqIkHFSLKaWuERoiozZzjGyfaAqiQIZ0VhGz++UFrSkXzqYHzlTLuDnuxhyyYS0kGzs25YDsVO1/AP6XdSE2SjAZpzktu8lR4RgMKFmW/LnyJ0lAJHa4In/z+qCMXgCVURDwZOvkwT8+11Cq5c1r91CY/KKqgwAwi7IgrsvytI/2Fk8u19bVNQqK8s3dZqq5bGgwcvorvjvvNLGbLHsqxhonBP/GCaFGhixOksSXrf4eNv0en3KUUpX91Z6EKcBj67WC950cQpVD6PeRZ5WPoCsZ4Lmi/udbCb41hNDvHsNtxfmbXPcXA2CqYil/ROo3yyXNCj+vGhAR+c2VOyB7PE8bv+0g9mHDPZ9gOecbTQCRad/2XRZ4RcpA8spNggNUi0py+G5GVSljIbG2aJFhtfzVBlmUnFsD32O50zOdyI3LIZ3EzBFpa3pGIrBFYpkXX/QC46zKaytg8qiN9xcxhdP27ZcjYXRU+OAJwAUtiT+tlN5qsBRa3NfoH62AuKw71S8s4JavBfxjUE7JNr6Sg7q2iY9GnJ6gVZ6gNWGxaojM8o/Myldh8Exycm8k8TdnMNJGzJZE3H+uMC3et6YppOYVtBTPj1JJ0amPIvunKJlUblGte98ZjiHvMWc+M9styFN0=
+        secure: cgJhlN4+EyTYLtc4pnGPPqzQ/S1A+/S7aqwVmXnUK+gfL0Ti/c432ycKl0pFiKs64elejHOqmiu6xmxzyv7SM9yErOgeqGa7tjw7XzuSmyJfv5fzjM/PEQcKbi83ZKgLGyC8PxJ/cCwmNmOpXOXUZXmz7aPN5apdpEjLJ1GySs+d1xWv4haqFScMYXgBo0OdFzjDQdTmjOYi5HjFPnyGOzCpFbpTu1rQ0nmJ7AGxX3+/pRKxPTDARKazUC/NuR2SLVsBuyk/xCmeIjzk0qQemJnowkjyfTlI7WqN8j76YMD5SSwX7dEptn+2PxcoUKrBxSDfPxGqkfk7ePk08v/U8bfw71LxwTFKJ/T/8NkmOs/UrC2xOwPXDsSplkojJk4UhKNK2OhlREv6F9fumnHsR6DYQgoh9BQ1fOvakYKZPmWhY4uhQuAfWc0cwkIo/w8UEmakDlOfYTbdXcbb2HtAgTAoFkJAkP/8Z4KCT2ZsAIwflBEqs2phd2EnflEEeYz3Aj0AbguxP0RGUI8f0jE+kFt5K3IPSivsB7zOc/CriEbYdRcUTvQcKojdNEMiEL+YBjcEzWP9uRjuqGrjzXRVM72Im66XsOtdX5BlnqYh6sM6URir7FBfuZQviuWr3EK+6kk/2DA2y48GgwKIQCWympbS9ZQKHk4G2s5agawogFo=
       file_glob: true
-      file: ./*.tgz
+      file: "./*.tgz"
       skip_cleanup: true
       on:
         tags: true
