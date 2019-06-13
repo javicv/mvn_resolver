@@ -68,10 +68,9 @@ func main() {
 		os.Exit(5)
 	}
 
-	for _, snapshotVersion := range metadata.Versioning.SnapshotVersions.SnapshotVersion {
-		if snapshotVersion.Extension == packaging {
-			var artifactURL = fmt.Sprintf("%s/%s/%s/%s/%s-%s.%s", REPO, strings.Join(groupID, "/"), artifactID, version, artifactID, snapshotVersion.Value, snapshotVersion.Extension)
-			fmt.Print(artifactURL)
-		}
+	snapshotVersion := maven.Filter(metadata.Versioning.SnapshotVersions.SnapshotVersion, func(v maven.SnapshotVersion) bool { return v.Extension == packaging })
+	for _, sv := range snapshotVersion {
+		var artifactURL = fmt.Sprintf("%s/%s/%s/%s/%s-%s.%s", REPO, strings.Join(groupID, "/"), artifactID, version, artifactID, sv.Value, sv.Extension)
+		fmt.Print(artifactURL)
 	}
 }

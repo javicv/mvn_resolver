@@ -14,7 +14,7 @@
 *  limitations under the License.
  */
 
-package maven
+package xml
 
 import "encoding/xml"
 
@@ -55,4 +55,15 @@ type SnapshotVersion struct {
 	Extension string   `xml:"extension"`
 	Value     string   `xml:"value"`
 	Updated   string   `xml:"updated"`
+}
+
+// Filter SnapshotVersion
+func Filter(vs []SnapshotVersion, f func(SnapshotVersion) bool) []SnapshotVersion {
+	vsf := make([]SnapshotVersion, 0)
+	for _, v := range vs {
+		if f(v) {
+			vsf = append(vsf, v)
+		}
+	}
+	return vsf
 }
