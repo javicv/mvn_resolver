@@ -10,6 +10,17 @@ This small application is designed to resolve the URL of the last snapshot uploa
 
 An Environment Variable ***MAVEN_REPO_URL*** with the Maven Repository base URL must be defined
 
-## Example
+If ***MAVEN_USERNAME*** and ***MAVEN_PASSWORD*** environment variables are set, connection with Maven repository will use Basic Athentication
 
-`MAVEN_REPO_URL=https://example.com/repo/snapshots ./mvn_resolver com.example.proj my-artifact 0.0.1-SNAPSHOT jar`
+## Example
+* Public Maven Repository
+
+$ `MAVEN_REPO_URL=https://example.com/repo/snapshots ./mvn_resolver com.example.proj my-artifact 0.0.1-SNAPSHOT jar`
+
+* Basic Authentication
+
+$ `export MAVEN_USERNAME=myuser`
+
+$ `export MAVEN_PASSWORD=password`
+
+$ `MAVEN_REPO_URL=https://example.com/repo/snapshots ./mvn_resolver com.example.proj my-artifact 0.0.1-SNAPSHOT jar`
