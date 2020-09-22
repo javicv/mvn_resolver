@@ -34,6 +34,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error: Environment variable MAVEN_REPO_URL must be set\n")
 		os.Exit(1)
 	}
+	var USERNAME, isSetUsername = os.LookupEnv("MAVEN_USERNAME")
+	var PASSWORD, isSetPassword = os.LookupEnv("MAVEN_PASSWORD")
 
 	if len(os.Args) < 5 {
 		fmt.Fprintf(os.Stderr, "Error: Not enough parameters provided\n")
@@ -46,26 +48,35 @@ func main() {
 	var packaging = os.Args[4]
 
 	var metadataURL = fmt.Sprintf("%s/%s/%s/%s/maven-metadata.xml", REPO, strings.Join(groupID, "/"), artifactID, version)
-	resp, err := http.Get(metadataURL)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", metadataURL, nil)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		os.Exit(3)
 	}
+	if isSetUsername && isSetPassword {
+		req.SetBasicAuth(USERNAME, PASSWORD)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+		os.Exit(4)
+	}
 	if resp.StatusCode != 200 {
 		fmt.Fprintf(os.Stderr, "%s: %s\n", resp.Status, metadataURL)
-		os.Exit(3)
+		os.Exit(4)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error processing response\n")
-		os.Exit(4)
+		os.Exit(5)
 	}
 	var metadata maven.Metadata
 	err = xml.Unmarshal(body, &metadata)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		os.Exit(5)
+		os.Exit(6)
 	}
 
 	snapshotVersion := maven.Filter(metadata.Versioning.SnapshotVersions.SnapshotVersion, func(v maven.SnapshotVersion) bool { return v.Extension == packaging })
