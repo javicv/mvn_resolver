@@ -28,7 +28,6 @@ import (
 )
 
 func main() {
-
 	var REPO, isSet = os.LookupEnv("MAVEN_REPO_URL")
 	if !isSet {
 		fmt.Fprintf(os.Stderr, "Error: Environment variable MAVEN_REPO_URL must be set\n")
@@ -62,26 +61,60 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		os.Exit(4)
 	}
-	if resp.StatusCode != 200 {
+	defer resp.Body.Close()
+	switch resp.StatusCode {
+	case 200:
+		processSnapshot(*resp, REPO, groupID, artifactID, version, packaging)
+		break
+	case 400:
+		processRelease(REPO, groupID, artifactID, version, packaging)
+		break
+	case 404:
+		processRelease(REPO, groupID, artifactID, version, packaging)
+		break
+	default:
 		fmt.Fprintf(os.Stderr, "%s: %s\n", resp.Status, metadataURL)
 		os.Exit(4)
 	}
-	defer resp.Body.Close()
+}
+
+func processRelease(repo string, groupID []string, artifactID string, version string, packaging string) {
+	var artifactURL = fmt.Sprintf("%s/%s/%s/%s/%s-%s.%s", repo, strings.Join(groupID, "/"), artifactID, version, artifactID, version, packaging)
+
+	client := &http.Client{}
+	req, err := http.NewRequest("HEAD", artifactURL, nil)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+		os.Exit(5)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+		os.Exit(6)
+	}
+	if resp.StatusCode != 200 {
+		fmt.Fprintf(os.Stderr, "Error %s: %s\n", resp.Status, artifactURL)
+		os.Exit(7)
+	}
+	fmt.Print(artifactURL)
+}
+
+func processSnapshot(resp http.Response, repo string, groupID []string, artifactID string, version string, packaging string) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error processing response\n")
-		os.Exit(5)
+		os.Exit(8)
 	}
 	var metadata maven.Metadata
 	err = xml.Unmarshal(body, &metadata)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		os.Exit(6)
+		os.Exit(9)
 	}
 
 	snapshotVersion := maven.Filter(metadata.Versioning.SnapshotVersions.SnapshotVersion, func(v maven.SnapshotVersion) bool { return v.Extension == packaging })
 	for _, sv := range snapshotVersion {
-		var artifactURL = fmt.Sprintf("%s/%s/%s/%s/%s-%s.%s", REPO, strings.Join(groupID, "/"), artifactID, version, artifactID, sv.Value, sv.Extension)
+		var artifactURL = fmt.Sprintf("%s/%s/%s/%s/%s-%s.%s", repo, strings.Join(groupID, "/"), artifactID, version, artifactID, sv.Value, sv.Extension)
 		fmt.Print(artifactURL)
 	}
 }
